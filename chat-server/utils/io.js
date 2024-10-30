@@ -34,23 +34,6 @@ module.exports = (io) => {
             }
         });
 
-        socket.on("joinRoom", async (rid, cb) => {
-            try {
-              const user = await checkUser(socket.id); // 일단 유저정보들고오기
-              await roomController.joinRoom(rid, user); // 1~2작업
-              socket.join(user.room.toString());//3 작업
-              const welcomeMessage = {
-                chat: `${user.name} is joined to this room`,
-                user: { id: null, name: "system" },
-              };
-              io.to(user.room.toString()).emit("message", welcomeMessage);// 4 작업
-              io.emit("rooms", await roomController.getAllRooms());// 5 작업
-              cb({ ok: true });
-            } catch (error) {
-              cb({ ok: false, error: error.message });
-            }
-          });
-
         socket.on("disconnect", () => {
             console.log("client is disconnected ", socket.id);
         });
