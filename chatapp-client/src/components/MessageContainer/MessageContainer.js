@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./MessageContainer.css";
 import { Container } from "@mui/system";
 
@@ -11,8 +11,18 @@ const MessageContainer = ({ messageList, user }) => {
         const showName = index === 0 || 
           messageList[index - 1].user.name !== message.user.name;
 
+        // 프로필 이미지와 이름을 표시할지 결정하는 함수
+        const shouldShowProfileImage = () => {
+          if (index === 0) return true;
+          const prevUserName = messageList[index - 1].user.name;
+          return prevUserName !== message.user.name && message.user.name !== "system";
+        };
+
+        // 고유한 key 생성
+        const uniqueKey = `${message._id}-${index}-${message.user.name}`;
+
         return (
-          <Container key={`${message._id}-${index}`} className="message-container">
+          <Container key={uniqueKey} className="message-container">
             {message.user.name === "system" ? (
               <div className="system-message-container">
                 <p className="system-message">{message.chat}</p>
@@ -23,21 +33,10 @@ const MessageContainer = ({ messageList, user }) => {
               </div>
             ) : (
               <div className="your-message-container">
-                <img
-                  src="/profile.jpeg"
-                  className="profile-image"
-                  style={
-                    (index === 0
-                      ? { visibility: "visible" }
-                      : messageList[index - 1].user.name === user.name) ||
-                    messageList[index - 1].user.name === "system"
-                      ? { visibility: "visible" }
-                      : { visibility: "hidden" }
-                  }
-                />
-                {showName && (
-                  <span className="user-name">{message.user.name}</span>
+                {shouldShowProfileImage() && (
+                  <img src="/profile.jpeg" className="profile-image" alt="profile" />
                 )}
+                {showName && <span className="user-name">{message.user.name}</span>}
                 <div className="your-message">{message.chat}</div>
               </div>
             )}
